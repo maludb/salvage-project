@@ -58,13 +58,13 @@ repo). Installation is two commands, run from inside Claude Code.
 **1. Add this repo as a marketplace:**
 
 ```
-/plugin marketplace add maludb-ed/salvage-project
+/plugin marketplace add maludb/salvage-project
 ```
 
 `/plugin marketplace add` also accepts a full git URL if you prefer:
 
 ```
-/plugin marketplace add https://github.com/maludb-ed/salvage-project.git
+/plugin marketplace add https://github.com/maludb/salvage-project.git
 ```
 
 You may be reminded that plugins can run code on your machine — only install from
@@ -122,7 +122,7 @@ Once installed, there are two ways in:
 To hack on salvage without going through GitHub, load it straight from a clone:
 
 ```bash
-git clone https://github.com/maludb-ed/salvage-project.git
+git clone https://github.com/maludb/salvage-project.git
 claude --plugin-dir ./salvage-project        # loads the plugin for that session
 ```
 

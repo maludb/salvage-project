@@ -10,8 +10,8 @@
       "source": "./",
       "description": "Recover the real requirements from a project that went down a bad path and emit a portable spec to rebuild on the simplest maintainable stack.",
       "version": "0.1.0",
-      "homepage": "https://github.com/maludb-ed/salvage-project",
-      "repository": "https://github.com/maludb-ed/salvage-project",
+      "homepage": "https://github.com/maludb/salvage-project",
+      "repository": "https://github.com/maludb/salvage-project",
       "license": "MIT"
     }
   ]
