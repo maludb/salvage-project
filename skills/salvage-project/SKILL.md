@@ -144,6 +144,94 @@ Then tell the developer exactly what to do next:
 3. Open a fresh Claude Code session in that repo — this skill will detect the
    bundle and set the project up automatically.
 
+---
+
 ## Accept mode (Act 3)
 
-See below — added next.
+A `salvage/manifest.yaml` is present, which means a bundle is waiting to be
+rebuilt into a clean project. Your job is to set the project up from the bundle
+and hand off to the build — **without re-brainstorming.** The salvage interview
+already validated this design; treat the bundle as the finished spec.
+
+### 1. Detect and confirm
+
+Read `salvage/manifest.yaml`. Use its `app_name` and `stack` for the greeting,
+verbatim shape:
+
+> "Found a salvage spec to rebuild **[app_name]** on **[stack]**. Want me to set
+> up the project?"
+
+Wait for the developer to say yes before doing the safety check and writing
+anything.
+
+### 2. Safety check (BEFORE writing anything)
+
+Two separate guards. Run both.
+
+**Fresh-target check.** The repo is "empty enough" if — ignoring `.git/`, the
+`salvage/` bundle itself, and this inert allowlist — nothing else remains:
+
+- `README*`
+- `LICENSE*`
+- `.gitignore`
+- `.editorconfig`
+
+If anything outside that set exists (any real source file, config, or stray
+doc), the repo is **not fresh.** List exactly what you found and require explicit
+confirmation before any setup:
+
+> "This repo already has code (X, Y, Z) — set up anyway?"
+
+Do not proceed until the developer confirms.
+
+**Per-file no-clobber (always, even in a fresh repo).** Before writing each
+canonical doc, check whether a file of that name already exists. If it does,
+**STOP and ask** — offer to back it up to `<name>.bak` first. Never overwrite
+blindly. A stray `CLAUDE.md` is not on the inert allowlist, so this guard runs
+even when the fresh-target check passed.
+
+### 3. Detect superpowers
+
+Glob the plugins directory for superpowers, e.g.:
+
+```
+~/.claude/plugins/**/superpowers/**/SKILL.md
+```
+
+(plus its config/manifest if present).
+
+- **Found** → state it with confidence: "superpowers is available — I'll use its
+  plan/execute workflow."
+- **Not found** → do **NOT** assert that it is absent (install paths vary).
+  Instead ask: "I don't see superpowers — if you have it installed, tell me;
+  otherwise I'd recommend `/plugin install superpowers`, or I can continue
+  standalone." Only the positive claim is made with confidence; the negative
+  degrades to a question.
+
+### 4. Write the canonical docs
+
+Copy the five docs from the bundle into the **repo root** (respecting the
+per-file no-clobber guard above for each):
+
+- `CLAUDE.md`
+- `requirements.md`
+- `tech-stack.md`
+- `design-notes.md`
+- `anti-patterns.md`
+
+These come straight from `salvage/`; you are not regenerating them.
+
+### 5. Transition to the build
+
+The bundle **is** the validated design. Do **not** re-brainstorm and do not
+reinvent plan-writing or execution — drop straight into building.
+
+- **superpowers present** → hand directly to `superpowers:writing-plans`, then
+  `superpowers:executing-plans`. The bundle is the spec the plan is written
+  from.
+- **superpowers absent** → follow the "How to build" fallback in the freshly
+  written `CLAUDE.md`: build feature-by-feature from `requirements.md`,
+  simplest-first, confirming each feature works before starting the next.
+
+salvage owns recovery and setup; the build is owned by superpowers (or a plain
+agent). superpowers is an optional accelerator, never a hard dependency.
