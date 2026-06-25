@@ -1,7 +1,7 @@
 # salvage — Design
 
 **Date:** 2026-06-25
-**Status:** Validated design, ready for implementation planning
+**Status:** Validated design, all open items resolved — ready for implementation planning
 
 > **salvage** — *Start over, simpler — without losing what you learned.*
 
@@ -213,10 +213,60 @@ short or clever code.
 
 ---
 
-## Open items for implementation planning
+## Resolved implementation decisions
 
-- Exact bundle file format (single `salvage/` dir with the five `.md` files).
-- How `simplicity-guide` references are structured so the interview can cite
-  them cleanly.
-- superpowers-detection mechanism (how `accept` reliably knows it's installed).
-- The "repo already has code" safety check in `accept`.
+*(These four were open during design; resolved 2026-06-25, ready for planning.)*
+
+### 1. Bundle format & detection — `salvage/` dir + `manifest.yaml`
+The bundle is a `salvage/` directory holding the five `.md` docs **plus** a small
+`manifest.yaml`:
+
+```yaml
+salvage_version: 1
+created: 2026-06-25
+app_name: <one-line app name>
+stack: <chosen stack, one line>
+docs: [CLAUDE.md, requirements.md, tech-stack.md, design-notes.md, anti-patterns.md]
+```
+
+`accept` detects a bundle by the presence of `salvage/manifest.yaml` (not by the
+doc filenames, which can collide with a developer's own files). The manifest also
+feeds the accept greeting's "[app] on [stack]" line without parsing prose.
+
+### 2. `simplicity-guide` reference structure — templated rungs
+Every reference file (`frontend.md`, `data-store.md`, …) follows one identical
+template: a short intro, then the ladder as **rung sections with anchored
+headings**. Each rung carries four fixed fields:
+- **Use when** — conditions that make this rung sufficient.
+- **Climb when** — the *stated requirement* that forces the next rung up.
+- **Cost** — what this rung costs the maintainer (the ceiling check).
+- **Rationale template** — a fill-in line, e.g. `"chose SQLite — {single writer},
+  {<10k rows}, {you wanted zero ops}"`.
+
+The Stage-3 interview cites a precise rung (e.g. `data-store.md#sqlite`) and lifts
+the rationale template straight into `tech-stack.md`. One uniform schema → the
+Stage-3 loop is one routine, not six special cases.
+
+### 3. superpowers detection — glob, then ask if absent
+`accept` globs the plugins dir (e.g. `~/.claude/plugins/**/superpowers/**/SKILL.md`,
+plus config/manifest if present).
+- **Found** → "superpowers is available — I'll use its plan/execute workflow."
+- **Not found** → do **not** assert absence; ask: "I don't see superpowers — if
+  you have it, tell me; otherwise I'd recommend `/plugin install superpowers`, or
+  I can continue standalone." Only the positive claim is made with confidence; the
+  negative degrades to a question, eliminating false negatives from non-standard
+  install paths.
+
+### 4. `accept` safety check — allowlist emptiness + per-file no-clobber
+Two separate guards:
+1. **Fresh-target check.** Repo is "empty enough" if — ignoring `.git/`, the
+   `salvage/` bundle, and an inert allowlist (`README*`, `LICENSE*`, `.gitignore`,
+   `.editorconfig`) — nothing else remains. Any real source files → not fresh.
+2. **Not fresh** → list what was found and require explicit confirmation before
+   setup ("This repo already has code (X, Y, Z) — set up anyway?").
+3. **Per-file no-clobber, always** → before writing each canonical doc, if it
+   already exists, stop and ask (offer `.bak` backup); never overwrite blindly,
+   even in a "fresh" repo (a stray `CLAUDE.md` is not on the inert allowlist).
+
+The clean-repo happy path runs with just the greeting; every riskier case
+escalates to a confirm.
