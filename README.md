@@ -52,8 +52,63 @@ into planning and building.
 
 ## Install
 
-salvage installs like any Claude Code plugin (`/plugin install`). Once
-installed, there are two entry points:
+salvage is distributed as a Claude Code plugin through its own marketplace (this
+repo). Installation is two commands, run from inside Claude Code.
+
+**1. Add this repo as a marketplace:**
+
+```
+/plugin marketplace add maludb-ed/salvage-project
+```
+
+`/plugin marketplace add` also accepts a full git URL if you prefer:
+
+```
+/plugin marketplace add https://github.com/maludb-ed/salvage-project.git
+```
+
+You may be reminded that plugins can run code on your machine — only install from
+sources you trust.
+
+**2. Install the plugin:**
+
+```
+/plugin install salvage@salvage
+```
+
+The format is `<plugin-name>@<marketplace-name>` — both are `salvage` here (the
+plugin and its marketplace share the name).
+
+Prefer a menu? Run `/plugin` to open the interactive interface — browse the
+**Discover** tab, select **salvage**, and install.
+
+### Verify
+
+```
+/plugin list
+```
+
+You should see `salvage@salvage` listed. Then confirm the command is live:
+
+```
+/salvage
+```
+
+Installed plugins are cached under
+`~/.claude/plugins/cache/<marketplace>/<plugin>/<version>/` — here
+`~/.claude/plugins/cache/salvage/salvage/0.1.0/`.
+
+### Update / uninstall
+
+```
+/plugin marketplace update salvage     # fetch the latest version
+/plugin uninstall salvage@salvage      # remove it
+/plugin disable salvage@salvage        # keep it installed but turn it off
+```
+
+### Entry points
+
+Once installed, there are two ways in:
 
 - **`/salvage`** — the guided command. Run it inside the broken project to start
   Act 1.
@@ -61,6 +116,24 @@ installed, there are two entry points:
   like *"salvage this project"*, *"start over simpler"*, or *"rebuild this"*
   invokes the same flow. The skill also runs automatically on session start to
   detect an existing bundle (Act 3).
+
+### Local development
+
+To hack on salvage without going through GitHub, load it straight from a clone:
+
+```bash
+git clone https://github.com/maludb-ed/salvage-project.git
+claude --plugin-dir ./salvage-project        # loads the plugin for that session
+```
+
+Or add the local checkout as a marketplace and install from it:
+
+```
+/plugin marketplace add ./salvage-project
+/plugin install salvage@salvage
+```
+
+After editing plugin files, run `/reload-plugins` to pick up the changes.
 
 ---
 
@@ -119,3 +192,9 @@ in the working directory: absent → Act 1 (recover and emit); present → Act 3
 (accept and set up). The `simplicity-guide` skill supplies one reference file per
 architecture fork, each laid out as a ladder of rungs with **Use when**,
 **Climb when**, **Cost**, and a fill-in **Rationale template**.
+
+---
+
+## License
+
+[MIT](LICENSE) © Edward Honour

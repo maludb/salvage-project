@@ -5,5 +5,8 @@
   "author": {
     "name": "Edward Honour"
   },
+  "homepage": "https://github.com/maludb-ed/salvage-project",
+  "repository": "https://github.com/maludb-ed/salvage-project",
+  "license": "MIT",
   "keywords": ["rewrite", "rebuild", "simplicity", "requirements", "spec"]
 }

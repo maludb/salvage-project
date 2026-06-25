@@ -1,0 +1,18 @@
+{
+  "name": "salvage",
+  "owner": {
+    "name": "Edward Honour"
+  },
+  "description": "salvage — start over, simpler, without losing what you learned.",
+  "plugins": [
+    {
+      "name": "salvage",
+      "source": "./",
+      "description": "Recover the real requirements from a project that went down a bad path and emit a portable spec to rebuild on the simplest maintainable stack.",
+      "version": "0.1.0",
+      "homepage": "https://github.com/maludb-ed/salvage-project",
+      "repository": "https://github.com/maludb-ed/salvage-project",
+      "license": "MIT"
+    }
+  ]
+}
