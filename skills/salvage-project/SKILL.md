@@ -21,6 +21,10 @@ Check the working directory for the file `salvage/manifest.yaml`.
   triggered by the `/salvage` command or by natural language such as "start
   over", "salvage this project", or "rebuild simpler".
 
+If `salvage/manifest.yaml` is present but the developer explicitly invoked
+`/salvage` (a salvage intent), confirm which mode they want rather than silently
+routing to accept mode.
+
 Do not mix modes. Decide once, then follow that act to the end.
 
 ---
@@ -84,6 +88,10 @@ move to Stage 3 until the "keep" list is agreed.
 Now choose the stack, one fork at a time. Invoke the **simplicity-guide** skill;
 it holds one reference file per fork (data store, frontend, realtime, auth, jobs,
 deploy), each structured as a ladder of rungs.
+
+A fork is **relevant** if the Stage-2 keep list implies that capability; skip
+forks the app doesn't need (e.g. no realtime needs → skip `realtime.md`). This
+reinforces YAGNI.
 
 For **each fork that is relevant** to this project, run this loop:
 
@@ -161,8 +169,18 @@ verbatim shape:
 > "Found a salvage spec to rebuild **[app_name]** on **[stack]**. Want me to set
 > up the project?"
 
-Wait for the developer to say yes before doing the safety check and writing
-anything.
+Wait for the developer to say yes before doing anything. The greeting's yes
+authorizes the safety check, not the writes — if the fresh-target check finds
+code, escalate to a second confirmation before writing anything.
+
+Sequence, in order:
+
+1. Greet and wait for yes.
+2. On yes → run the safety check (fresh-target check + per-file no-clobber).
+3. If the fresh-target check finds non-allowlisted code → **STOP** and require a
+   SECOND explicit confirmation ("This repo already has code (X, Y, Z) — set up
+   anyway?") before any write.
+4. Only then write the docs, still honoring per-file no-clobber with `.bak`.
 
 ### 2. Safety check (BEFORE writing anything)
 
@@ -198,7 +216,9 @@ Glob the plugins directory for superpowers, e.g.:
 ~/.claude/plugins/**/superpowers/**/SKILL.md
 ```
 
-(plus its config/manifest if present).
+(plus its config/manifest if present). Install paths vary, so this glob can
+miss even when superpowers is installed — if it does, fall back to asking (the
+degrade-to-question behavior below).
 
 - **Found** → state it with confidence: "superpowers is available — I'll use its
   plan/execute workflow."
@@ -219,7 +239,9 @@ per-file no-clobber guard above for each):
 - `design-notes.md`
 - `anti-patterns.md`
 
-These come straight from `salvage/`; you are not regenerating them.
+These come straight from `salvage/`; you are not regenerating them. Only these
+five docs are copied out to the repo root; the `manifest.yaml` stays in
+`salvage/`.
 
 ### 5. Transition to the build
 
