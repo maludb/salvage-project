@@ -140,7 +140,9 @@ small; it is orientation, not a spec.
 single most valuable artifact in the bundle — it stops the fresh agent from
 walking back into the same wreck.
 
-**`CLAUDE.md`** — start from `templates/CLAUDE.md` and fill its slots from the
+**`CLAUDE.md`** — start from this plugin's bundled template at
+`${CLAUDE_PLUGIN_ROOT}/templates/CLAUDE.md` (not a file in the project being
+salvaged) and fill its slots from the
 interview: `{{skill_level}}` (from the Stage-1 maintenance ceiling), `{{stack}}`
 (from Stage 3), and `{{requirements}}` (a one-line summary of the keep list). The
 fixed principles half is copied verbatim — do not soften it.
